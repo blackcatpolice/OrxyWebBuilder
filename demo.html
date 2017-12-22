@@ -1,0 +1,81 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Oxer !</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.5.1/css/bulma.min.css">
+    <script src="dist/oxer.js"></script>
+</head>
+
+<body>
+
+</body>
+<script>
+    Oxer({
+        enableRoute: true,
+        debug: true,
+        data: {
+            select: [{
+                name: 1
+            }, {
+                value: 2
+            }],
+            test2: '',
+            test: 'test',
+            user: {
+                name: 'lhh',
+                age: 11,
+                sex: true,
+                test: {
+                    name: 'hhhhhhh',
+                    content: 'ffff'
+                }
+            },
+            selected: '',
+            menuData: ''
+        },
+        nodes: [
+            Hero({
+                class: 'is-primary',
+                title: 'New Web Builder Framework',
+                subtitle: 'Oxer - Only use javascript build web stucture'
+            }),
+            Level({
+                class: 'container',
+                nodes: [
+                    LevelLeft({
+                        nodes: [LevelItem({
+                                nodes: Menu({
+                                    dataItem: [{
+                                        name: 'Genearl',
+                                        list: [{
+                                            name: 'DashBoard',
+                                            href: '#/'
+                                        }, {
+                                            name: 'Customers',
+                                            sub: [{
+                                                name: 'Manageme your team',
+                                                href: '#/Form'
+                                            }]
+                                        }]
+                                    }]
+                                }),
+                            }),
+                            LevelItem({
+                                nodes: [
+                                    pageIndex(),
+                                    pageForm()
+                                ]
+                            })
+                        ]
+                    })
+                ]
+            }),
+            bFooter({})
+        ]
+    })
+</script>
+
+</html>
