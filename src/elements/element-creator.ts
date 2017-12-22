@@ -4,13 +4,15 @@ function element_create(processCallback) {
             extend :{
                 option:null,
                 tagName:null,
-                elementProc:null
+                elementProc:null,
+                valuePro:null
             }
         };
         processCallback(param);
         var option = param.extend.option;
         var tagName = param.extend.tagName;
         var elementProc = param.extend.elementProc;
+        var valuePro = param.extend.valuePro;
         var element = document.createElement(tagName);
         
         if(!contextElement.children){
@@ -21,9 +23,9 @@ function element_create(processCallback) {
         contextElement.children.push(option);
         option.parent = contextElement;
         elementProc&&elementProc(element,option,contextElement.children[contextElement.children.length-1],context)
-        element_property(option,element,contextElement.children[contextElement.children.length-1],context,elementProc);
+        element_property(option,element,contextElement.children[contextElement.children.length-1],context,valuePro);
         if(option.route)
-        {
+        { 
             if(!context.routeTable)
             {
                 context.routeTable = []

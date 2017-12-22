@@ -73,6 +73,8 @@ function Input(option) {
                 _element.type = _option.type;
             }
         }        
+    },(ele,val)=>{
+        ele.value = val; 
     });
 }
 
@@ -110,13 +112,13 @@ function Select(option) {
         }
     }
     return generalElement(option,'select',(_element,_option,_contextElement,_context)=>{
+        var valueArr = __getPropValue__(_context.data,_option.datasource);
         if(_option){
             if (_option.datasource) {
                 //var bindFullKey = __getFullKey__(option);
-                var value = __getPropValue__(_context.data,_option.datasource);
-                if(typeof value ==='object'){
-                    if (value instanceof Array) { 
-                        value.forEach(item => {
+                if(typeof valueArr ==='object'){
+                    if (valueArr instanceof Array) { 
+                        valueArr.forEach(item => {
                             var key= Object.keys(item)[0];
                             var value =item[key];
                             var option= document.createElement('option');
@@ -130,7 +132,7 @@ function Select(option) {
             if (_option.bind) {
                 var bindFullKey = __getFullKey__(option);
                 var value = __getPropValue__(_context.data,bindFullKey);
-
+                __setPropValue__(_context.data,bindFullKey,value?value:_element.value); 
                 _element.onchange=function(e){
                     __setPropValue__(_context.data,bindFullKey,this.value); 
                  } 

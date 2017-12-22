@@ -1,35 +1,3 @@
-function pageForm() {
-    return Div({
-        route: '/form',
-        nodes: 'Hey , this is page form'
-    });
-}
-function pageIndex() {
-    return Div({
-        route: '/',
-        nodes: [
-            Div({
-                nodes: [
-                    bField({
-                        name: 'Name',
-                        bind: 'user.name'
-                    }),
-                    Div({
-                        bind: 'user.name'
-                    }),
-                    bSelect({
-                        datasource: 'select',
-                        bind: 'selected'
-                    }),
-                    Div({
-                        name: 'subject',
-                        bind: 'selected'
-                    })
-                ]
-            })
-        ]
-    });
-}
 function Oxer(option) {
     var context = {};
     context.extend({
@@ -67,13 +35,15 @@ function element_create(processCallback) {
             extend: {
                 option: null,
                 tagName: null,
-                elementProc: null
+                elementProc: null,
+                valuePro: null
             }
         };
         processCallback(param);
         var option = param.extend.option;
         var tagName = param.extend.tagName;
         var elementProc = param.extend.elementProc;
+        var valuePro = param.extend.valuePro;
         var element = document.createElement(tagName);
         if (!contextElement.children) {
             contextElement.children = [];
@@ -81,7 +51,7 @@ function element_create(processCallback) {
         contextElement.children.push(option);
         option.parent = contextElement;
         elementProc && elementProc(element, option, contextElement.children[contextElement.children.length - 1], context);
-        element_property(option, element, contextElement.children[contextElement.children.length - 1], context, elementProc);
+        element_property(option, element, contextElement.children[contextElement.children.length - 1], context, valuePro);
         if (option.route) {
             if (!context.routeTable) {
                 context.routeTable = [];
@@ -187,6 +157,7 @@ function __getFullKey__(option) {
 function __setPropValue__(obj, key, value) {
     if (obj && key) {
         var dataKeyStack = key.split('.').reverse();
+        dataKeyStack.length == 0 && dataKeyStack.push(key);
         var targetProp = obj;
         while (dataKeyStack.length > 0) {
             var _key = dataKeyStack.pop();
@@ -239,7 +210,7 @@ function pipline_nodes(nodes, context) {
         Object.keys(context.watcherKeyVault).forEach(function (bindFullKey) {
             context.watcherKeyVault[bindFullKey].forEach(function (item) {
                 var value = __getPropValue__(context.data, bindFullKey);
-                item.func(item.el, value);
+                item.func(item.el, value, context.elements, context);
             });
         });
     }
@@ -344,6 +315,8 @@ function Input(option) {
                 _element.type = _option.type;
             }
         }
+    }, function (ele, val) {
+        ele.value = val;
     });
 }
 function Textarea(option) {
@@ -378,12 +351,12 @@ function Select(option) {
         };
     }
     return generalElement(option, 'select', function (_element, _option, _contextElement, _context) {
+        var valueArr = __getPropValue__(_context.data, _option.datasource);
         if (_option) {
             if (_option.datasource) {
-                var value = __getPropValue__(_context.data, _option.datasource);
-                if (typeof value === 'object') {
-                    if (value instanceof Array) {
-                        value.forEach(function (item) {
+                if (typeof valueArr === 'object') {
+                    if (valueArr instanceof Array) {
+                        valueArr.forEach(function (item) {
                             var key = Object.keys(item)[0];
                             var value = item[key];
                             var option = document.createElement('option');
@@ -397,6 +370,7 @@ function Select(option) {
             if (_option.bind) {
                 var bindFullKey = __getFullKey__(option);
                 var value = __getPropValue__(_context.data, bindFullKey);
+                __setPropValue__(_context.data, bindFullKey, value ? value : _element.value);
                 _element.onchange = function (e) {
                     __setPropValue__(_context.data, bindFullKey, this.value);
                 };
@@ -425,39 +399,39 @@ function Ul(option) {
     return generalElement(option, 'ul');
 }
 function Level(opts) {
-    if (opts.class) {
-        if (opts.class instanceof Array) {
-            opts.class.push('level');
+    if (opts["class"]) {
+        if (opts["class"] instanceof Array) {
+            opts["class"].push('level');
         }
         else {
             var classArr = [];
-            classArr.push(opts.class);
+            classArr.push(opts["class"]);
             classArr.push('level');
         }
     }
     else {
-        opts.class = 'level';
+        opts["class"] = 'level';
     }
     return Div(opts);
 }
 function LevelItem(opts) {
-    opts.class = 'level-item';
+    opts["class"] = 'level-item';
     return Div(opts);
 }
 function LevelLeft(opts) {
-    opts.class = 'level-left';
+    opts["class"] = 'level-left';
     return Div(opts);
 }
 function LevelRight(opts) {
-    opts.class = 'level-right';
+    opts["class"] = 'level-right';
     return Div(opts);
 }
 function Tile(opts) {
     return Div({
-        class: ['tile'],
+        "class": ['tile'],
         nodes: [
             Aticle({
-                class: ['notification'].concat(opts.class),
+                "class": ['notification'].concat(opts["class"]),
                 nodes: [
                     P({
                         nodes: opts.title
@@ -466,7 +440,7 @@ function Tile(opts) {
                         nodes: opts.subtitle
                     }),
                     Div({
-                        class: 'content',
+                        "class": 'content',
                         nodes: [
                             P({
                                 nodes: opts.content
@@ -480,26 +454,26 @@ function Tile(opts) {
 }
 function Hero(opts) {
     return Section({
-        class: [
+        "class": [
             'hero'
-        ].concat(opts.class || []),
+        ].concat(opts["class"] || []),
         nodes: [
             Div({
-                class: "hero-body",
+                "class": "hero-body",
                 nodes: [
                     Div({
-                        class: [
+                        "class": [
                             "container"
                         ],
                         nodes: [
                             H1({
-                                class: [
+                                "class": [
                                     'title'
                                 ],
                                 nodes: opts.title
                             }),
                             H2({
-                                class: [
+                                "class": [
                                     'subtitle'
                                 ],
                                 nodes: opts.subtitle
@@ -513,13 +487,13 @@ function Hero(opts) {
 }
 function bFooter(opts) {
     return Footer({
-        class: ['footer'],
+        "class": ['footer'],
         nodes: [
             Div({
-                class: ['container'],
+                "class": ['container'],
                 nodes: [
                     Div({
-                        class: ['content', 'has-text-centered'],
+                        "class": ['content', 'has-text-centered'],
                         nodes: [
                             P({
                                 nodes: [
@@ -555,7 +529,7 @@ function Menu(opts) {
     var groupArr = [];
     opts.dataItem && opts.dataItem.forEach(function (groupElement) {
         var eleP = P({
-            class: 'menu-label',
+            "class": 'menu-label',
             nodes: groupElement.name
         });
         var eleList = [];
@@ -584,7 +558,7 @@ function Menu(opts) {
             }
         });
         var eleUl = Ul({
-            class: 'menu-list',
+            "class": 'menu-list',
             nodes: eleList
         });
         groupArr.push(eleP);
@@ -596,17 +570,17 @@ function Menu(opts) {
 }
 function bField(opts) {
     return Div({
-        class: 'field',
+        "class": 'field',
         nodes: [
             Label({
-                class: 'label',
+                "class": 'label',
                 nodes: opts.name
             }),
             Div({
-                class: 'control',
+                "class": 'control',
                 nodes: [
                     Input({
-                        class: 'input',
+                        "class": 'input',
                         bind: opts.bind
                     })
                 ]
@@ -616,17 +590,17 @@ function bField(opts) {
 }
 function bSelect(opts) {
     return Div({
-        class: 'field',
+        "class": 'field',
         nodes: [
             Label({
-                class: 'label',
+                "class": 'label',
                 nodes: opts.name
             }),
             Div({
-                class: 'control',
+                "class": 'control',
                 nodes: [
                     Div({
-                        class: 'select',
+                        "class": 'select',
                         nodes: [
                             Select({
                                 datasource: opts.datasource,
@@ -650,7 +624,7 @@ if (!Object.prototype['clone']) {
             var _this = this;
             var o = new Object();
             Object.keys(_this).forEach(function (item) {
-                if (typeof _this[item] === "Object")
+                if (typeof _this[item] === "object")
                     o[item] = _this[item];
                 else
                     o[item] = _this[item];
@@ -669,7 +643,7 @@ if (!Object.prototype['extend']) {
             var o = new Object();
             Object.keys(extObj).forEach(function (item) {
                 if (_this.hasOwnProperty(item)) {
-                    if (typeof _this[item] === "Object") {
+                    if (typeof _this[item] === "object") {
                         _this[item].extend(extObj[item]);
                     }
                 }
@@ -679,5 +653,37 @@ if (!Object.prototype['extend']) {
             });
             return o;
         }
+    });
+}
+function pageForm() {
+    return Div({
+        route: '/form',
+        nodes: 'Hey , this is page form'
+    });
+}
+function pageIndex() {
+    return Div({
+        route: '/',
+        nodes: [
+            Div({
+                nodes: [
+                    bField({
+                        name: 'Name',
+                        bind: 'user.name'
+                    }),
+                    Div({
+                        bind: 'user.name'
+                    }),
+                    bSelect({
+                        datasource: 'select',
+                        bind: 'selected'
+                    }),
+                    Div({
+                        name: 'subject',
+                        bind: 'selected'
+                    })
+                ]
+            })
+        ]
     });
 }

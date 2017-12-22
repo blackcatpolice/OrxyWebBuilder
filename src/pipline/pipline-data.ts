@@ -34,6 +34,7 @@ function __getFullKey__(option){
 function __setPropValue__(obj,key,value) {
     if (obj&&key) {
         var dataKeyStack = key.split('.').reverse();
+        dataKeyStack.length==0&&dataKeyStack.push(key);
         var targetProp = obj;
         while (dataKeyStack.length>0) {
             var _key=dataKeyStack.pop();

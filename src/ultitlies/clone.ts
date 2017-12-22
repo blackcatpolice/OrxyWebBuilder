@@ -7,8 +7,8 @@ if (!Object.prototype['clone']) {
             var _this = this;
             var o = new Object();
 
-            Object.keys(_this).forEach(function (item) {
-                if (typeof _this[item] === "Object")
+            Object.keys(_this).forEach(function (item) { 
+                if (typeof _this[item] === "object")
                     o[item] = _this[item];
                 else
                     o[item] = _this[item];

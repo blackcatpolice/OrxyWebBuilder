@@ -11,7 +11,7 @@ function pipline_nodes(nodes,context) {
         Object.keys(context.watcherKeyVault).forEach(bindFullKey=>{
           context.watcherKeyVault[bindFullKey].forEach(item => { 
             var value = __getPropValue__(context.data,bindFullKey);
-                item.func(item.el,value);
+                item.func(item.el,value,context.elements,context);
             });
         })
     } 
